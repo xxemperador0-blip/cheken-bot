@@ -1,1 +1,0 @@
-module.exports={config:{name:"slap",version:"1.0",author:"Cheken",countDown:5,role:0,category:"fun",guide:"{pn} @mention"},onStart:async function({api,event}){const id=Object.keys(event.mentions)[0];if(!id)return api.sendMessage("Mention someone to slap!",event.threadID);api.sendMessage(`👋 ${event.senderID} slapped ${id} ! Ouch! 🤣`,event.threadID)}};
