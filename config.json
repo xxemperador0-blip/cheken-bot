@@ -1,4 +1,8 @@
-"adminBot": [
-  "61593117279214"
-],
-"ownerId": "61593117279214"
+{
+  "adminBot": [
+    "61593117279214"
+  ],
+  "ownerId": "61593117279214",
+  "prefix": "!",
+  "botName": "Cheken's Bot"
+}
