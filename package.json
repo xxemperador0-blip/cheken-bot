@@ -7,7 +7,7 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "ws3-fca": "^1.8.2",
+    "ws3-fca": "latest",
     "axios": "^1.7.2",
     "fs-extra": "^11.2.0",
     "moment-timezone": "^0.5.45",
