@@ -11,89 +11,52 @@ module.exports={
   config:{
     name:"dungeon",
     aliases:["rpg","adventure"],
-    version:"2.0",
+    version:"3.0",
     author:"Cheken",
-    countDown:5,
+    countDown:3,
     role:0,
     category:"game",
-    guide:"{pn}\n{pn} stats\n{pn} fight\n{pn} heal\n{pn} leaderboard"
+    guide:`{pn}
+{pn} stats
+{pn} fight
+{pn} heal
+
+👑 ADMIN ONLY (Master Cheken):
+{pn} setlevel @user 10
+{pn} setatk @user 100
+{pn} sethp @user 1000
+{pn} setfloor @user 50
+{pn} reset @user`
   },
   onStart:async function({api,event,args,usersData}){
     const cmd=args[0]?.toLowerCase();
     const sender=await usersData.get(event.senderID);
     
-    // Init player data
     if(!sender.data.dungeon){
-      sender.data.dungeon={
-        level:1,
-        exp:0,
-        hp:100,
-        maxHp:100,
-        atk:15,
-        def:5,
-        floor:1
-      };
+      sender.data.dungeon={level:1,exp:0,hp:100,maxHp:100,atk:15,def:5,floor:1};
       await usersData.set(event.senderID,{data:sender.data});
     }
     const p=sender.data.dungeon;
 
-    if(!cmd){
-      return api.sendMessage(
-`🏰 𝗗𝗨𝗡𝗚𝗘𝗢𝗡 𝗥𝗣𝗚 🏰
-━━━━━━━━━━━━
-!dungeon stats - Your stats
-!dungeon fight - Fight monster
-!dungeon heal - Heal HP ($100)
-!dungeon leaderboard - Top players
+    // ========== ADMIN COMMANDS - ONLY YOU MASTER CHEKEN ==========
+    const adminCmds=["setlevel","setatk","sethp","setdef","setfloor","reset"];
+    if(adminCmds.includes(cmd)){
+      // Check if you are bot owner
+      const isOwner=global.GoatBot.config.adminBot.includes(event.senderID) || global.GoatBot.config.ownerId==event.senderID;
+      if(!isOwner) return api.sendMessage("❌ Only Master Cheken can manipulate dungeon levels! 👑",event.threadID);
 
-You: Lv.${p.level} | Floor ${p.floor}
-For Master Cheken 👑
-`,event.threadID);
-    }
-
-    if(cmd=="stats"){
-      return api.sendMessage(
-`⚔️ 𝗬𝗢𝗨𝗥 𝗦𝗧𝗔𝗧𝗦 ⚔️
-━━━━━━━━━━━━
-👑 ${await usersData.getName(event.senderID)}
-⭐ Level: ${p.level}
-❤️ HP: ${p.hp}/${p.maxHp}
-🗡️ ATK: ${p.atk}
-🛡️ DEF: ${p.def}
-✨ EXP: ${p.exp}/${p.level*100}
-🏰 Floor: ${p.floor}
-💰 Money: $${sender.money||0}
-
-${p.hp<=0?"💀 YOU ARE DEAD! Use !dungeon heal":"✅ Ready to fight!"}
-`,event.threadID);
-    }
-
-    if(cmd=="heal"){
-      if(p.hp>=p.maxHp) return api.sendMessage("❤️ HP already full!",event.threadID);
-      if((sender.money||0)<100) return api.sendMessage("❌ Need $100 to heal! Do !daily",event.threadID);
-      p.hp=p.maxHp;
-      await usersData.set(event.senderID,{money:sender.money-100,data:sender.data});
-      return api.sendMessage(`💖 Healed! HP: ${p.hp}/${p.maxHp} (-$100)`,event.threadID);
-    }
-
-    if(cmd=="fight"){
-      if(p.hp<=0) return api.sendMessage("💀 You are dead! Heal first: !dungeon heal",event.threadID);
+      const targetID=Object.keys(event.mentions)[0]||event.messageReply?.senderID;
+      if(!targetID) return api.sendMessage(`Mention user! Ex: dungeon ${cmd} @user 100`,event.threadID);
       
-      // Pick monster based on floor
-      const monsterIndex=Math.min(Math.floor(p.floor/2),monsters.length-1);
-      const monster=JSON.parse(JSON.stringify(monsters[monsterIndex]));
+      const targetData=await usersData.get(targetID);
+      if(!targetData.data.dungeon) targetData.data.dungeon={level:1,exp:0,hp:100,maxHp:100,atk:15,def:5,floor:1};
       
-      let battleLog=`⚔️ FLOOR ${p.floor} - You vs ${monster.name}!\n━━━━━━━━━━━━\n`;
-      
-      // Fight loop
-      while(p.hp>0 && monster.hp>0){
-        // Player attack
-        const playerDmg=Math.max(1,p.atk - Math.floor(Math.random()*3));
-        monster.hp-=playerDmg;
-        battleLog+=`🗡️ You hit ${monster.name} -${playerDmg} HP\n`;
-        if(monster.hp<=0) break;
-        
-        // Monster attack
-        const monsterDmg=Math.max(1,monster.atk - p.def + Math.floor(Math.random()*5));
-        p.hp-=monsterDmg;
+      const value=parseInt(args[2]);
+      const targetName=await usersData.getName(targetID);
+
+      if(cmd=="setlevel"){
+        if(isNaN(value)) return api.sendMessage("Enter level number!",event.threadID);
+        targetData.data.dungeon.level=value;
+        targetData.data.dungeon.maxHp=100+(value-1)*20;
+        targetData.data.dungeon.atk=15+(value-1)*5;
        
