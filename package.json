@@ -1,23 +1,15 @@
 {
-  "name": "web-app",
-  "version": "2.0.0",
-  "description": "my school project",
+  "name": "cheken-bot",
+  "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "axios": "^1.7.2",
-    "chalk": "^4.1.2",
-    "cheerio": "^1.0.0",
-    "cron": "^3.1.6",
-    "express": "^4.18.2",
-    "fca-maf": "^1.0.0",
+    "@xaviabot/fca-unofficial": "^1.2.0",
     "fs-extra": "^11.2.0",
-    "moment-timezone": "^0.5.43",
-    "node-cron": "^3.0.3",
+    "axios": "^1.7.2",
     "canvas": "^2.11.2",
-    "jimp": "^0.22.10",
-    "request": "^2.88.2"
+    "moment-timezone": "^0.5.45"
   }
 }
